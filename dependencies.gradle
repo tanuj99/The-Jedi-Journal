@@ -1,0 +1,11 @@
+ext {
+
+    ktor_version = "2.3.6"
+
+    dep = [
+            ktorCore : "io.ktor:ktor-client-core:${ktor_version}",
+            ktorAndroid : "io.ktor:ktor-client-android:${ktor_version}",
+            ktorSerialization : "io.ktor:ktor-client-serialization:${ktor_version}"
+    ]
+
+}
