@@ -49,7 +49,6 @@ class CharacterListVM(private val coreServices: CoreServices): BaseVM<CharacterL
     private fun clearDatabase() {
         coreServices.scope.launch {
             coreServices.charactersDatabase.dao.clearCharactersList()
-            coreServices.filmsDatabase.dao.clearFilmsList()
         }
     }
 
