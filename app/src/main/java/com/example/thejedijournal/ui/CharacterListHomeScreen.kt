@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.Color.Companion.Yellow
 import androidx.compose.ui.layout.*
 import androidx.compose.ui.res.*
+import androidx.compose.ui.text.style.*
 import androidx.compose.ui.unit.*
 import androidx.navigation.*
 import androidx.navigation.compose.*
@@ -186,7 +187,7 @@ class CharacterListHomeScreen : ComponentActivity() {
                 ModalBottomSheet(
                     onDismissRequest = {
                         showFilterBottomSheet.value =
-                            false // Update showFilterBottomSheet variable name
+                            false
                     },
                     sheetState = sheetState,
                     containerColor = Color.Black,
@@ -230,7 +231,7 @@ class CharacterListHomeScreen : ComponentActivity() {
                                 },
                                 modifier = Modifier
                                     .padding(horizontal = 8.dp, vertical = 4.dp)
-                                    .background(color = Color.Transparent) // Optional styling
+                                    .background(color = Color.Transparent)
                             ) {
                                 Text(
                                     text = "Male",
@@ -245,7 +246,7 @@ class CharacterListHomeScreen : ComponentActivity() {
                                 },
                                 modifier = Modifier
                                     .padding(horizontal = 8.dp, vertical = 4.dp)
-                                    .background(color = Color.Transparent) // Optional styling
+                                    .background(color = Color.Transparent)
                             ) {
                                 Text(
                                     text = "Female",
@@ -265,25 +266,24 @@ class CharacterListHomeScreen : ComponentActivity() {
                     },
                     sheetState = sheetState,
                     containerColor = Color.Black,
-                    // contentColor is no longer needed as we'll set text color explicitly
                 ) {
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
-                            .padding(16.dp) // Increased padding for better spacing
-                            .background(color = Color.Black), // Ensure black background
-                        horizontalAlignment = CenterHorizontally // Center content
+                            .padding(16.dp)
+                            .background(color = Color.Black),
+                        horizontalAlignment = CenterHorizontally
                     ) {
                         Text(
                             text = "Sort Character List By - ",
                             fontSize = 24.sp,
                             color = Yellow, // Set text color to yellow
-                            modifier = Modifier.padding(bottom = 16.dp) // Add spacing before options
+                            modifier = Modifier.padding(bottom = 16.dp)
                         )
 
                         Row(
                             modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceEvenly // Evenly distribute options
+                            horizontalArrangement = Arrangement.SpaceEvenly
                         ) {
                             TextButton(onClick = {
                                 characterListVM.sortCharactersListByName()
@@ -330,7 +330,7 @@ class CharacterListHomeScreen : ComponentActivity() {
     private fun CharacterListGridView(
         characterListState: State<CharacterListState>,
         navHostController: NavHostController,
-        onEndReached: () -> Unit,
+        onEndReached: () -> Unit, // Fetch next page of character when we reach end of current list
     ) {
 
         val swipeRefreshState = rememberSwipeRefreshState(
@@ -349,7 +349,7 @@ class CharacterListHomeScreen : ComponentActivity() {
             ) {
                 when (characterListState.value.characterListFetchState) {
                     FetchState.REQUESTED -> {
-                        items(10) {
+                        items(15) {
                             CharacterShimmerView()
                         }
                     }
@@ -376,6 +376,7 @@ class CharacterListHomeScreen : ComponentActivity() {
                                 Text(
                                     text = "No Characters here, Pull to refresh",
                                     color = Color.Red,
+                                    textAlign = TextAlign.Center
                                 )
                             }
                         }
@@ -386,6 +387,7 @@ class CharacterListHomeScreen : ComponentActivity() {
                             Text(
                                 text = "Something went wrong, Please try again",
                                 color = Color.Red,
+                                textAlign = TextAlign.Center
                             )
                         }
                     }
