@@ -1,5 +1,6 @@
 ## The-Jedi-Journal: Discover Characters and Their Cinematic Journeys
 
+<p align="center"><img src="assets/star_wars.png" alt="StarWars" height="150px"></p>
 
 **The-Jedi-Journal** is a mobile application that brings the beloved Star Wars universe to your fingertips. Explore a comprehensive database of characters, presented in a visually appealing grid view, and delve into their cinematic sagas with movie information.
 
@@ -13,7 +14,7 @@
 
 ** App Snapshots **
 
-<img src="assets/Spash_screen.png" width="250"/> <img src="assets/ShimmerView.png" width="250"/> <img src="assets/HomeScreen.png" width="250"/> <img src="assets/Filter_Bottom_sheet.png" width="250"/> <img src="assets/CharacterDetails.png" width="250"/>
+<img src="assets/Spash_screen.png" width="250"/> <img src="assets/ShimmerView.png" width="250"/> <img src="assets/HomeScreen.png" width="250"/> <img src="assets/Filter_Bottom_sheet.png" width="250"/> <img src="assets/Sprt_bottom_sheet.png" width="250"/> <img src="assets/CharacterDetails.png" width="250"/>
 
 **Tech Stack:**
 
