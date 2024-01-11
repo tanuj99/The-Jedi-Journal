@@ -166,25 +166,3 @@ fun CharacterItem(name: String, birthday: String, eyeColor: String, onItemClick:
         }
     }
 }
-
-@Composable
-fun ShowLoadingView(showLoading: Boolean) {
-    Dialog(onDismissRequest = { !showLoading }) {
-        Box(
-            contentAlignment = Alignment.Center,
-            modifier = Modifier
-                .size(50.dp)
-                .background(color = Color.DarkGray, shape = CircleShape)
-        ) {
-            CircularProgressIndicator(modifier = Modifier.size(36.dp))
-        }
-    }
-}
-
-@Preview
-@Composable
-fun CharacterCardItem() {
-    CharacterItem(name = "sdasd", birthday = "asdasd", eyeColor = "asdsad") {
-
-    }
-}
