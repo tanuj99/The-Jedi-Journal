@@ -11,8 +11,8 @@ class ApiConstants {
 
 class Api {
     private val BASE_URL = "https://swapi.dev/api/"
-    private val peopleResource = "people"
-    private val filmsResource = "films"
+    private val peopleResource = "people/"
+    private val filmsResource = "films/"
     private val starshipsResource = "starships"
     private val vehiclesResource = "vehicles"
     private val planetsResource = "planets"

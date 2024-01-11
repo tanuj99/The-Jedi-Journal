@@ -61,6 +61,7 @@ dependencies {
     implementation("androidx.compose.ui:ui-graphics")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("androidx.compose.material3:material3")
+    implementation("androidx.navigation:navigation-compose:2.7.6")
 
     // Added dependencies
 
@@ -69,6 +70,8 @@ dependencies {
     implementation("io.ktor:ktor-client-serialization:2.3.6")
     implementation("io.ktor:ktor-client-content-negotiation:2.3.6")
     implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.6")
+
+    implementation("com.google.accompanist:accompanist-swiperefresh:0.24.2-alpha")
 
     // Test Dependencies
     testImplementation("junit:junit:4.13.2")

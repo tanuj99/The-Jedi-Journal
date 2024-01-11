@@ -1,5 +1,6 @@
 package com.example.thejedijournal.network
 
+import android.util.*
 import com.example.thejedijournal.data.remote.model.*
 import io.ktor.client.*
 import io.ktor.client.call.*
@@ -33,9 +34,9 @@ class HttpClientService {
 
         // Set timeouts to limit network call wait time.
         install(HttpTimeout) {
-            requestTimeoutMillis = 5000
-            connectTimeoutMillis = 5000
-            socketTimeoutMillis = 5000
+            requestTimeoutMillis = 10000
+            connectTimeoutMillis = 10000
+            socketTimeoutMillis = 10000
         }
 
         // Expect Json response by default unless specified otherwise
@@ -48,6 +49,7 @@ class HttpClientService {
         apiPath: String,
         queryParams: Map<String, String> = mapOf(),
     ): T {
+        Log.d(TAG, "makeGETRequest: $apiPath")
 
         try {
             val responseModel: T = client.get(apiPath) {
@@ -60,6 +62,7 @@ class HttpClientService {
                     parameter(it.key, it.value)
                 }
             }.body()
+            Log.d(TAG, "makeGETRequest: $responseModel")
             return responseModel
         } catch (e: ResponseException) {
             val errorContent = e.response.bodyAsText()
@@ -71,10 +74,12 @@ class HttpClientService {
             } catch (e: Exception) {
                 NetworkErrorModel(message = errorContent)
             }
-            
-            throw NetworkException(errorModel.copy(status = e.response.status.value))
+            throw NetworkException(errorModel.copy(
+                status = e.response.status.value,
+                message = errorContent)
+            )
         } catch (th: Throwable) {
-            throw NetworkException(NetworkErrorModel(message = "Unknown error"))
+            throw NetworkException(NetworkErrorModel(message = "$th"))
         }
     }
 }
