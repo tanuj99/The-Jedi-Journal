@@ -32,6 +32,7 @@ class CharacterListVM(private val coreServices: CoreServices): BaseVM<CharacterL
                 charactersList = response.results.map { it.toCharactersEntity() }
                 nextPageUrl = response.next
                 mutableState.value = CharacterListState(characterListFetchState = FetchState.SUCCESS)
+                clearDatabase()
                 insertCharactersToDB(charactersList)
             } catch (e: Exception) {
                 if (charactersList.isEmpty()) {
@@ -41,6 +42,14 @@ class CharacterListVM(private val coreServices: CoreServices): BaseVM<CharacterL
                  )
                 }
             }
+        }
+    }
+
+    // Clear Database when Fresh Character List is fetched
+    private fun clearDatabase() {
+        coreServices.scope.launch {
+            coreServices.charactersDatabase.dao.clearCharactersList()
+            coreServices.filmsDatabase.dao.clearFilmsList()
         }
     }
 

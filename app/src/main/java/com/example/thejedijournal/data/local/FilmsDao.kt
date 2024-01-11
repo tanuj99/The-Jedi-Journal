@@ -14,5 +14,5 @@ interface FilmsDao {
     suspend fun getFilms(): List<FilmsEntity>
 
     @Query("DELETE FROM films_table")
-    suspend fun clearCharactersList()
+    suspend fun clearFilmsList()
 }
