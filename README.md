@@ -15,7 +15,7 @@
 * **Infinite Scrollable** List using custom Pagination.
 * **Customise using Sort/Filter** View characters as you want, you can sort by `name`, `created_at` and `updated_at` and you can filter them by gender, `male` or `female`.
 
-** App Snapshots **
+**App Snapshots:**
 
 <img src="assets/Spash_screen.png" width="250"/> <img src="assets/ShimmerView.png" width="250"/> <img src="assets/HomeScreen.png" width="250"/> <img src="assets/Filter_Bottom_sheet.png" width="250"/> <img src="assets/Sprt_bottom_sheet.png" width="250"/> <img src="assets/CharacterDetails.png" width="250"/>
 
