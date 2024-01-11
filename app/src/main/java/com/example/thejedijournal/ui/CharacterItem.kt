@@ -55,7 +55,6 @@ fun CharacterShimmerItem(brush: Brush) {
             .padding(16.dp)
             .wrapContentSize(),
         shape = RoundedCornerShape(16.dp),
-        border = BorderStroke(1.dp, Color.Yellow)
     ) {
         Column(
             modifier = Modifier

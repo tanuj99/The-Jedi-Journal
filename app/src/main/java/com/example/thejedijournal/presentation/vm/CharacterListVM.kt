@@ -45,20 +45,22 @@ class CharacterListVM(private val coreServices: CoreServices): BaseVM<CharacterL
     }
 
     fun loadMoreCharacters() {
-        mutableState.value = mutableState.value.copy(loadMoreCharacterListFetchState = FetchState.REQUESTED)
-        coreServices.scope.launch {
-            try {
-                val response: RootPeopleResponse = coreServices.httpService.makeGETRequest(nextPageUrl)
-                charactersList += response.results.map { it.toCharactersEntity() }
-                nextPageUrl = response.next
-                mutableState.value = mutableState.value.copy(loadMoreCharacterListFetchState = FetchState.SUCCESS)
-                insertCharactersToDB(charactersList)
-            } catch (e: Exception) {
-                if (charactersList.isEmpty()) {
-                    Log.e(TAG, "Failed to fetch characters", e)
-                    mutableState.value = CharacterListState(
-                        characterListFetchState = FetchState.FAILURE
-                    )
+        if (!mutableState.value.isFilterSortOperation) {
+            mutableState.value = mutableState.value.copy(loadMoreCharacterListFetchState = FetchState.REQUESTED)
+            coreServices.scope.launch {
+                try {
+                    val response: RootPeopleResponse = coreServices.httpService.makeGETRequest(nextPageUrl)
+                    charactersList += response.results.map { it.toCharactersEntity() }
+                    nextPageUrl = response.next
+                    mutableState.value = mutableState.value.copy(loadMoreCharacterListFetchState = FetchState.SUCCESS)
+                    insertCharactersToDB(charactersList)
+                } catch (e: Exception) {
+                    if (charactersList.isEmpty()) {
+                        Log.e(TAG, "Failed to fetch characters", e)
+                        mutableState.value = CharacterListState(
+                            characterListFetchState = FetchState.FAILURE
+                        )
+                    }
                 }
             }
         }
@@ -132,29 +134,34 @@ class CharacterListVM(private val coreServices: CoreServices): BaseVM<CharacterL
     }
 
     fun sortCharactersListByName() {
+        mutableState.value = mutableState.value.copy(isFilterSortOperation = true)
         charactersList = charactersList.sortedBy {
             it.name
         }
     }
 
     fun sortCharactersListByCreatedAt() {
+        mutableState.value = mutableState.value.copy(isFilterSortOperation = true)
         charactersList = charactersList.sortedBy {
             it.created
         }
     }
     fun sortCharactersListByUpdatedAt() {
+        mutableState.value = mutableState.value.copy(isFilterSortOperation = true)
         charactersList = charactersList.sortedBy {
             it.edited
         }
     }
 
     fun filterCharacterListByMale() {
+        mutableState.value = mutableState.value.copy(isFilterSortOperation = true)
         charactersList = charactersList.filter {
             it.gender == "male"
         }
     }
 
     fun filterCharacterListByFemale() {
+        mutableState.value = mutableState.value.copy(isFilterSortOperation = true)
         charactersList = charactersList.filter {
             it.gender == "female"
         }
