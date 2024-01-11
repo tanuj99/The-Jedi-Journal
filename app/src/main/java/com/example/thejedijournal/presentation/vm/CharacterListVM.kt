@@ -2,6 +2,8 @@ package com.example.thejedijournal.presentation.vm
 
 import android.util.Log
 import com.example.thejedijournal.core.*
+import com.example.thejedijournal.data.local.*
+import com.example.thejedijournal.data.mapper.*
 import com.example.thejedijournal.data.remote.model.*
 import com.example.thejedijournal.presentation.state.*
 import kotlinx.coroutines.*
@@ -10,29 +12,27 @@ class CharacterListVM(private val coreServices: CoreServices): BaseVM<CharacterL
 
 
     private val TAG = "CharacterListVM"
-    var charactersList = listOf<CharacterModel>()
-    var nextPageUrl = ""
-    var previousPageUrl: String? = ""
-    private var currentPageUrl = ""
+    var charactersList = listOf<CharactersEntity>()
+    private var nextPageUrl = ""
 
-    var characterFilmsList = listOf<FilmsModel>()
-    var allFilmsList = listOf<FilmsModel>()
-    lateinit var selectedCharacter: CharacterModel
+    var characterFilmsList = listOf<FilmsEntity>()
+    var allFilmsList = listOf<FilmsEntity>()
+    lateinit var selectedCharacter: CharactersEntity
 
     override fun initialState(): CharacterListState {
         return CharacterListState()
     }
 
-    fun getCharactersList(apiPath: String = coreServices.apis.PEOPLE_API) {
+    fun getInitialCharactersList() {
         mutableState.value = CharacterListState(characterListFetchState = FetchState.REQUESTED)
-        currentPageUrl = apiPath
+        val apiPath: String = coreServices.apis.PEOPLE_API
         coreServices.scope.launch {
             try {
                 val response: RootPeopleResponse = coreServices.httpService.makeGETRequest(apiPath)
-                charactersList = response.results
+                charactersList = response.results.map { it.toCharactersEntity() }
                 nextPageUrl = response.next
-                previousPageUrl = response.previous
                 mutableState.value = CharacterListState(characterListFetchState = FetchState.SUCCESS)
+                insertCharactersToDB(charactersList)
             } catch (e: Exception) {
                 if (charactersList.isEmpty()) {
                     Log.e(TAG, "Failed to fetch characters", e)
@@ -44,7 +44,58 @@ class CharacterListVM(private val coreServices: CoreServices): BaseVM<CharacterL
         }
     }
 
-    fun getFilmsForSelectedCharacter(character: CharacterModel) {
+    fun loadMoreCharacters() {
+        mutableState.value = mutableState.value.copy(loadMoreCharacterListFetchState = FetchState.REQUESTED)
+        coreServices.scope.launch {
+            try {
+                val response: RootPeopleResponse = coreServices.httpService.makeGETRequest(nextPageUrl)
+                charactersList += response.results.map { it.toCharactersEntity() }
+                nextPageUrl = response.next
+                mutableState.value = mutableState.value.copy(loadMoreCharacterListFetchState = FetchState.SUCCESS)
+                insertCharactersToDB(charactersList)
+            } catch (e: Exception) {
+                if (charactersList.isEmpty()) {
+                    Log.e(TAG, "Failed to fetch characters", e)
+                    mutableState.value = CharacterListState(
+                        characterListFetchState = FetchState.FAILURE
+                    )
+                }
+            }
+        }
+
+    }
+
+    fun getCharactersListFromDB() {
+        coreServices.scope.launch {
+            mutableState.value = mutableState.value.copy(characterListFetchState = FetchState.REQUESTED)
+            charactersList = coreServices.charactersDatabase.dao.getCharacters()
+            if (charactersList.isNotEmpty()) {
+                mutableState.value = mutableState.value.copy(characterListFetchState = FetchState.SUCCESS)
+            } else mutableState.value = mutableState.value.copy(characterListFetchState = FetchState.FAILURE)
+        }
+    }
+
+    fun getFilmsListFromDB() {
+        coreServices.scope.launch {
+            mutableState.value =
+                mutableState.value.copy(characterFilmsFetchState = FetchState.REQUESTED)
+            allFilmsList = coreServices.filmsDatabase.dao.getFilms()
+            if (allFilmsList.isNotEmpty()) {
+                mutableState.value =
+                    mutableState.value.copy(characterFilmsFetchState = FetchState.SUCCESS)
+            } else mutableState.value =
+                mutableState.value.copy(characterFilmsFetchState = FetchState.FAILURE)
+        }
+    }
+    private suspend fun insertCharactersToDB(results: List<CharactersEntity>) {
+        coreServices.charactersDatabase.dao.insertCharacterList(results)
+    }
+
+    private suspend fun insertFilmsToDB(results: List<FilmsEntity>) {
+        coreServices.filmsDatabase.dao.insertFilmsList(results)
+    }
+
+    fun getFilmsForSelectedCharacter(character: CharactersEntity) {
         mutableState.value = mutableState.value.copy(characterFilmsFetchState = FetchState.REQUESTED)
         selectedCharacter = character
 
@@ -65,7 +116,8 @@ class CharacterListVM(private val coreServices: CoreServices): BaseVM<CharacterL
                 val apiPath = coreServices.apis.FILM_API
                 val response: RootFilmsResponse = coreServices.httpService.makeGETRequest(apiPath)
                 Log.d(TAG, "fetchAllFilms: $response")
-                allFilmsList = response.results
+                allFilmsList = response.results.map { it.toFilmsEntity() }
+                insertFilmsToDB(allFilmsList)
                 Log.d(TAG, "fetchAllFilms: ${response.results}")
             } catch (e: Exception) {
                 mutableState.value = mutableState.value.copy(characterFilmsFetchState = FetchState.FAILURE)
@@ -76,7 +128,7 @@ class CharacterListVM(private val coreServices: CoreServices): BaseVM<CharacterL
 
     fun refreshCharacterList() {
         mutableState.value = mutableState.value.copy(refreshCharacterList = true)
-        getCharactersList(currentPageUrl)
+        getInitialCharactersList()
     }
 
     fun sortCharactersListByName() {

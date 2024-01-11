@@ -2,7 +2,6 @@ package com.example.thejedijournal.ui
 
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.*
 import androidx.compose.foundation.lazy.grid.*
 import androidx.compose.foundation.shape.*
 import androidx.compose.material.icons.*
@@ -14,7 +13,6 @@ import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.draw.*
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.layout.*
-import androidx.compose.ui.modifier.*
 import androidx.compose.ui.res.*
 import androidx.compose.ui.text.*
 import androidx.compose.ui.text.font.*
@@ -22,7 +20,7 @@ import androidx.compose.ui.text.style.*
 import androidx.compose.ui.unit.*
 import androidx.navigation.*
 import com.example.thejedijournal.R
-import com.example.thejedijournal.data.remote.model.*
+import com.example.thejedijournal.data.local.*
 import com.example.thejedijournal.presentation.state.*
 import com.example.thejedijournal.presentation.vm.*
 
@@ -117,7 +115,7 @@ fun CharacterDetailScreen(
 
 @Composable
 fun FilmRow(
-    films: FilmsModel,
+    films: FilmsEntity,
     modifier: Modifier
 ) {
     Column(modifier = modifier) {

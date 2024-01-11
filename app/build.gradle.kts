@@ -2,6 +2,7 @@ plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
     kotlin("plugin.serialization")
+    id("com.google.devtools.ksp") version "1.9.21-1.0.15"
 }
 
 android {
@@ -72,6 +73,17 @@ dependencies {
     implementation("io.ktor:ktor-serialization-kotlinx-json:2.3.6")
 
     implementation("com.google.accompanist:accompanist-swiperefresh:0.24.2-alpha")
+
+    // Room Database
+    val roomVersion = "2.6.1"
+
+    implementation("androidx.room:room-runtime:$roomVersion")
+    annotationProcessor("androidx.room:room-compiler:$roomVersion")
+    implementation("androidx.room:room-ktx:$roomVersion")
+    // To use Kotlin annotation processing tool (kapt)
+    ksp("androidx.room:room-compiler:$roomVersion")
+    // To use Kotlin Symbol Processing (KSP)
+    ksp("androidx.room:room-compiler:$roomVersion")
 
     // Test Dependencies
     testImplementation("junit:junit:4.13.2")

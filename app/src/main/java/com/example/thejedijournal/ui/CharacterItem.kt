@@ -15,6 +15,7 @@ import androidx.compose.ui.text.font.*
 import androidx.compose.ui.text.style.*
 import androidx.compose.ui.tooling.preview.*
 import androidx.compose.ui.unit.*
+import androidx.compose.ui.window.*
 
 @Composable
 fun CharacterShimmerView() {
@@ -121,17 +122,19 @@ fun CharacterItem(name: String, birthday: String, eyeColor: String, onItemClick:
                 text = name,
                 fontSize = 24.sp,
                 fontStyle = FontStyle.Italic,
-                fontWeight = FontWeight.Bold,
+                fontWeight = FontWeight.SemiBold,
                 color = Color.Yellow,
                 softWrap = true,
-//                maxLines = 1, overflow = TextOverflow.Ellipsis
+                textAlign = TextAlign.Center,
+                fontFamily = FontFamily.Monospace,
+                lineHeight = 30.sp
             )
 
             Spacer(modifier = Modifier.height(8.dp))
 
             Row(
                 modifier = Modifier
-                    .wrapContentWidth().height(18.dp)
+                    .wrapContentWidth().height(24.dp)
                     .align(Alignment.CenterHorizontally),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
@@ -143,9 +146,9 @@ fun CharacterItem(name: String, birthday: String, eyeColor: String, onItemClick:
                         imageVector = Icons.Default.Face,
                         contentDescription = null,
                         tint = Color.LightGray,
-                        modifier = Modifier.size(12.dp)
+                        modifier = Modifier.size(16.dp)
                     )
-                    Text(text = eyeColor, color = Color.LightGray, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Text(text = eyeColor, color = Color.LightGray, fontSize = 16.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 }
                 Spacer(modifier = Modifier.width(8.dp))
                 Row(
@@ -156,14 +159,27 @@ fun CharacterItem(name: String, birthday: String, eyeColor: String, onItemClick:
                         imageVector = Icons.Default.Star,
                         contentDescription = null,
                         tint = Color.LightGray,
-                        modifier = Modifier.size(12.dp)
+                        modifier = Modifier.size(16.dp)
                     )
-                    Text(text = birthday, color = Color.LightGray, fontSize = 12.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
+                    Text(text = birthday, color = Color.LightGray, fontSize = 16.sp, maxLines = 1, overflow = TextOverflow.Ellipsis)
                 }
             }
         }
     }
+}
 
+@Composable
+fun ShowLoadingView(showLoading: Boolean) {
+    Dialog(onDismissRequest = { !showLoading }) {
+        Box(
+            contentAlignment = Alignment.Center,
+            modifier = Modifier
+                .size(50.dp)
+                .background(color = Color.DarkGray, shape = CircleShape)
+        ) {
+            CircularProgressIndicator(modifier = Modifier.size(36.dp))
+        }
+    }
 }
 
 @Preview

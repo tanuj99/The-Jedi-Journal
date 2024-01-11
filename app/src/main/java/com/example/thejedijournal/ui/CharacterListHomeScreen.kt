@@ -1,6 +1,7 @@
 package com.example.thejedijournal.ui
 
 import android.os.*
+import android.util.*
 import androidx.activity.*
 import androidx.activity.compose.*
 import androidx.compose.foundation.*
@@ -49,8 +50,14 @@ class CharacterListHomeScreen : ComponentActivity() {
                 }
             }
         }
-        characterListVM.getCharactersList()
-        characterListVM.fetchAllFilms()
+        if (coreServices.isDeviceOnline) {
+            Log.d("HomeScreen", "onCreate: Fetching from Network")
+            characterListVM.getInitialCharactersList()
+        } else {
+            Log.d("HomeScreen", "onCreate: Fetching from DB")
+            characterListVM.getCharactersListFromDB()
+            characterListVM.getFilmsListFromDB()
+        }
     }
 
     @Composable
@@ -72,10 +79,6 @@ class CharacterListHomeScreen : ComponentActivity() {
         val showFilterBottomSheet = remember { mutableStateOf(false) }
         val showSortBottomSheet = remember { mutableStateOf(false) }
         val showSettingOptions = remember { mutableStateOf(false) }
-
-        val swipeRefreshState = rememberSwipeRefreshState(
-            isRefreshing = characterListState.value.refreshCharacterList
-        )
 
         Column(
             modifier = Modifier
@@ -164,111 +167,19 @@ class CharacterListHomeScreen : ComponentActivity() {
                     .height(24.dp)
             )
 
-            SwipeRefresh(state = swipeRefreshState, onRefresh = {
-                characterListVM.refreshCharacterList()
-                if (characterListVM.allFilmsList.isEmpty()) {
-                    characterListVM.fetchAllFilms()
-                }
-            }) {
-                LazyVerticalGrid(
-                    columns = GridCells.Fixed(2),
-                    contentPadding = PaddingValues(4.dp)
-                ) {
-                    when (characterListState.value.characterListFetchState) {
-                        FetchState.REQUESTED -> {
-                            items(10) {
-                                CharacterShimmerView()
-                            }
-                        }
-
-                        FetchState.SUCCESS -> {
-                            if (characterListVM.charactersList.isNotEmpty()) {
-                                items(characterListVM.charactersList) { character ->
-                                    CharacterItem(
-                                        name = character.name,
-                                        birthday = character.birthYear,
-                                        eyeColor = character.eyeColor
-                                    ) {
-                                        characterListVM.getFilmsForSelectedCharacter(character)
-                                        navHostController.navigate(NavigationScreens.CharacterDetailScreen.route)
-                                    }
-                                }
-                            } else {
-                                item {
-                                    Text(
-                                        text = "No Characters here, Pull to refresh",
-                                        color = Color.Red,
-                                        modifier = Modifier.align(CenterHorizontally)
-                                    )
-                                }
-                            }
-                        }
-
-                        FetchState.FAILURE -> {
-                            item {
-                                Text(
-                                    text = "Something went wrong, Please try again",
-                                    color = Color.Red,
-                                    modifier = Modifier.align(CenterHorizontally)
-                                )
-                            }
-                        }
-
-                        else -> {}
-                    }
-                }
+            CharacterListGridView(characterListState, navHostController) {
+                if (characterListState.value.loadMoreCharacterListFetchState != FetchState.REQUESTED)
+                    characterListVM.loadMoreCharacters()
             }
-
-            Spacer(Modifier.weight(1f))
-            Box(
+            Spacer(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(8.dp)
-            ) {
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(36.dp)
-                        .padding(horizontal = 16.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween,
-                ) {
-                    TextButton(
-                        onClick = {
-                            characterListVM.previousPageUrl?.let {
-                                characterListVM.getCharactersList(
-                                    it
-                                )
-                            }
-                        },
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Back",
-                            tint = Color.Yellow
-                        )
-                        Text(
-                            text = "Prev",
-                            color = Color.Yellow,
-                            modifier = Modifier.padding(horizontal = 4.dp)
-                        )
-                    }
-                    TextButton(
-                        onClick = {
-                            characterListVM.getCharactersList(characterListVM.nextPageUrl)
-                        },
-                    ) {
-                        Text(
-                            text = "Next",
-                            color = Color.Yellow,
-                            modifier = Modifier.padding(horizontal = 4.dp)
-                        )
-                        Icon(
-                            imageVector = Icons.Default.ArrowForward,
-                            contentDescription = "Back",
-                            tint = Color.Yellow
-                        )
-                    }
-                }
+                    .height(24.dp)
+            )
+
+            if (characterListState.value.loadMoreCharacterListFetchState == FetchState.REQUESTED) {
+                CircularProgressIndicator(modifier = Modifier
+                    .align(CenterHorizontally)
+                    .padding(8.dp))
             }
 
             if (showFilterBottomSheet.value) {
@@ -411,6 +322,76 @@ class CharacterListHomeScreen : ComponentActivity() {
                     }
                 }
 
+            }
+        }
+    }
+
+    @Composable
+    private fun CharacterListGridView(
+        characterListState: State<CharacterListState>,
+        navHostController: NavHostController,
+        onEndReached: () -> Unit,
+    ) {
+
+        val swipeRefreshState = rememberSwipeRefreshState(
+            isRefreshing = characterListState.value.refreshCharacterList && coreServices.isDeviceOnline
+        )
+
+        SwipeRefresh(state = swipeRefreshState, onRefresh = {
+            characterListVM.refreshCharacterList()
+            if (characterListVM.allFilmsList.isEmpty()) {
+                characterListVM.fetchAllFilms()
+            }
+        }) {
+            LazyVerticalGrid(
+                columns = GridCells.Fixed(2),
+                contentPadding = PaddingValues(4.dp)
+            ) {
+                when (characterListState.value.characterListFetchState) {
+                    FetchState.REQUESTED -> {
+                        items(10) {
+                            CharacterShimmerView()
+                        }
+                    }
+
+                    FetchState.SUCCESS -> {
+                        if (characterListVM.charactersList.isNotEmpty()) {
+                            items(characterListVM.charactersList.size) { i ->
+                                val character = characterListVM.charactersList[i]
+
+                                if (i >= characterListVM.charactersList.size - 1) {
+                                    onEndReached()
+                                }
+                                CharacterItem(
+                                    name = character.name,
+                                    birthday = character.birthYear,
+                                    eyeColor = character.eyeColor
+                                ) {
+                                    characterListVM.getFilmsForSelectedCharacter(character)
+                                    navHostController.navigate(NavigationScreens.CharacterDetailScreen.route)
+                                }
+                            }
+                        } else {
+                            item {
+                                Text(
+                                    text = "No Characters here, Pull to refresh",
+                                    color = Color.Red,
+                                )
+                            }
+                        }
+                    }
+
+                    FetchState.FAILURE -> {
+                        item {
+                            Text(
+                                text = "Something went wrong, Please try again",
+                                color = Color.Red,
+                            )
+                        }
+                    }
+
+                    else -> {}
+                }
             }
         }
     }
