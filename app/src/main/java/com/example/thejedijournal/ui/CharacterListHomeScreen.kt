@@ -36,7 +36,10 @@ class CharacterListHomeScreen : ComponentActivity() {
         setContent {
             val navHostController = rememberNavController()
             TheJediJournalTheme {
-                NavHost(navController = navHostController, startDestination = NavigationScreens.CharacterListScreen.route) {
+                NavHost(
+                    navController = navHostController,
+                    startDestination = NavigationScreens.CharacterListScreen.route
+                ) {
                     composable(NavigationScreens.CharacterListScreen.route) {
                         HomeScreenBase(navHostController)
                     }
@@ -84,11 +87,15 @@ class CharacterListHomeScreen : ComponentActivity() {
                     contentScale = ContentScale.FillBounds
                 )
         ) {
-            Spacer(modifier = Modifier
-                .height(16.dp))
+            Spacer(
+                modifier = Modifier
+                    .height(16.dp)
+            )
 
-            Row(verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceAround) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.SpaceAround
+            ) {
                 Spacer(modifier = Modifier.weight(0.9f))
                 Image(
                     painter = painterResource(
@@ -104,7 +111,11 @@ class CharacterListHomeScreen : ComponentActivity() {
 
                 Column() {
                     IconButton(onClick = { showSettingOptions.value = true }) {
-                        Icon(Icons.Default.MoreVert, contentDescription = "Settings", tint = Color.Yellow)
+                        Icon(
+                            Icons.Default.MoreVert,
+                            contentDescription = "Settings",
+                            tint = Color.Yellow
+                        )
                     }
                     DropdownMenu(
                         expanded = showSettingOptions.value,
@@ -113,11 +124,19 @@ class CharacterListHomeScreen : ComponentActivity() {
                         Column(modifier = Modifier.background(Color.Black)) {
                             TextButton(
                                 onClick = {
-                                        showFilterBottomSheet.value = true
+                                    showFilterBottomSheet.value = true
                                 },
                             ) {
-                                Icon(imageVector = Icons.Filled.List, contentDescription = "Filter", tint = Color.LightGray)
-                                Text(text = "Filter", color = Color.LightGray, modifier = Modifier.padding(horizontal = 4.dp))
+                                Icon(
+                                    imageVector = Icons.Filled.List,
+                                    contentDescription = "Filter",
+                                    tint = Color.LightGray
+                                )
+                                Text(
+                                    text = "Filter",
+                                    color = Color.LightGray,
+                                    modifier = Modifier.padding(horizontal = 4.dp)
+                                )
                             }
 
                             TextButton(
@@ -125,15 +144,25 @@ class CharacterListHomeScreen : ComponentActivity() {
                                     showSortBottomSheet.value = true
                                 },
                             ) {
-                                Icon(imageVector = Icons.Filled.Settings, contentDescription = "Sort", tint = Color.LightGray)
-                                Text(text = "Sort", color = Color.LightGray, modifier = Modifier.padding(horizontal = 4.dp))
+                                Icon(
+                                    imageVector = Icons.Filled.Settings,
+                                    contentDescription = "Sort",
+                                    tint = Color.LightGray
+                                )
+                                Text(
+                                    text = "Sort",
+                                    color = Color.LightGray,
+                                    modifier = Modifier.padding(horizontal = 4.dp)
+                                )
                             }
                         }
                     }
                 }
             }
-            Spacer(modifier = Modifier
-                .height(24.dp))
+            Spacer(
+                modifier = Modifier
+                    .height(24.dp)
+            )
 
             SwipeRefresh(state = swipeRefreshState, onRefresh = {
                 characterListVM.refreshCharacterList()
@@ -145,12 +174,13 @@ class CharacterListHomeScreen : ComponentActivity() {
                     columns = GridCells.Fixed(2),
                     contentPadding = PaddingValues(4.dp)
                 ) {
-                    when(characterListState.value.characterListFetchState) {
+                    when (characterListState.value.characterListFetchState) {
                         FetchState.REQUESTED -> {
                             items(10) {
                                 CharacterShimmerView()
                             }
                         }
+
                         FetchState.SUCCESS -> {
                             if (characterListVM.charactersList.isNotEmpty()) {
                                 items(characterListVM.charactersList) { character ->
@@ -165,28 +195,36 @@ class CharacterListHomeScreen : ComponentActivity() {
                                 }
                             } else {
                                 item {
-                                    Text(text = "No Characters here, Pull to refresh",
+                                    Text(
+                                        text = "No Characters here, Pull to refresh",
                                         color = Color.Red,
-                                        modifier = Modifier.align(CenterHorizontally))
+                                        modifier = Modifier.align(CenterHorizontally)
+                                    )
                                 }
                             }
                         }
+
                         FetchState.FAILURE -> {
                             item {
-                                Text(text = "Something went wrong, Please try again",
+                                Text(
+                                    text = "Something went wrong, Please try again",
                                     color = Color.Red,
-                                    modifier = Modifier.align(CenterHorizontally))
+                                    modifier = Modifier.align(CenterHorizontally)
+                                )
                             }
                         }
+
                         else -> {}
                     }
                 }
             }
 
             Spacer(Modifier.weight(1f))
-            Box(modifier = Modifier
-                .fillMaxWidth()
-                .padding(8.dp)) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp)
+            ) {
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -203,16 +241,32 @@ class CharacterListHomeScreen : ComponentActivity() {
                             }
                         },
                     ) {
-                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back", tint = Color.Yellow)
-                        Text(text = "Prev", color = Color.Yellow, modifier = Modifier.padding(horizontal = 4.dp))
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Back",
+                            tint = Color.Yellow
+                        )
+                        Text(
+                            text = "Prev",
+                            color = Color.Yellow,
+                            modifier = Modifier.padding(horizontal = 4.dp)
+                        )
                     }
                     TextButton(
                         onClick = {
                             characterListVM.getCharactersList(characterListVM.nextPageUrl)
                         },
                     ) {
-                        Text(text = "Next", color = Color.Yellow, modifier = Modifier.padding(horizontal = 4.dp))
-                        Icon(imageVector = Icons.Default.ArrowForward, contentDescription = "Back", tint = Color.Yellow)
+                        Text(
+                            text = "Next",
+                            color = Color.Yellow,
+                            modifier = Modifier.padding(horizontal = 4.dp)
+                        )
+                        Icon(
+                            imageVector = Icons.Default.ArrowForward,
+                            contentDescription = "Back",
+                            tint = Color.Yellow
+                        )
                     }
                 }
             }
@@ -220,11 +274,11 @@ class CharacterListHomeScreen : ComponentActivity() {
             if (showFilterBottomSheet.value) {
                 ModalBottomSheet(
                     onDismissRequest = {
-                        showFilterBottomSheet.value = false // Update showFilterBottomSheet variable name
+                        showFilterBottomSheet.value =
+                            false // Update showFilterBottomSheet variable name
                     },
                     sheetState = sheetState,
                     containerColor = Color.Black,
-                    // contentColor is no longer needed as we'll set text color explicitly
                 ) {
                     Column(
                         modifier = Modifier
@@ -259,7 +313,10 @@ class CharacterListHomeScreen : ComponentActivity() {
                             horizontalArrangement = Arrangement.SpaceEvenly
                         ) {
                             TextButton(
-                                onClick = { characterListVM.filterCharacterListByMale() },
+                                onClick = {
+                                    characterListVM.filterCharacterListByMale()
+                                    showFilterBottomSheet.value = false
+                                },
                                 modifier = Modifier
                                     .padding(horizontal = 8.dp, vertical = 4.dp)
                                     .background(color = Color.Transparent) // Optional styling
@@ -271,7 +328,10 @@ class CharacterListHomeScreen : ComponentActivity() {
                                 )
                             }
                             TextButton(
-                                onClick = { characterListVM.filterCharacterListByFemale() },
+                                onClick = {
+                                    characterListVM.filterCharacterListByFemale()
+                                    showFilterBottomSheet.value = false
+                                },
                                 modifier = Modifier
                                     .padding(horizontal = 8.dp, vertical = 4.dp)
                                     .background(color = Color.Transparent) // Optional styling
@@ -314,7 +374,10 @@ class CharacterListHomeScreen : ComponentActivity() {
                             modifier = Modifier.fillMaxWidth(),
                             horizontalArrangement = Arrangement.SpaceEvenly // Evenly distribute options
                         ) {
-                            TextButton(onClick = { characterListVM.sortCharactersListByName() }) {
+                            TextButton(onClick = {
+                                characterListVM.sortCharactersListByName()
+                                showSortBottomSheet.value = false
+                            }) {
                                 Text(
                                     text = "Name",
                                     fontSize = 18.sp,
@@ -322,7 +385,10 @@ class CharacterListHomeScreen : ComponentActivity() {
                                     modifier = Modifier.padding(vertical = 8.dp)
                                 )
                             }
-                            TextButton(onClick = { characterListVM.sortCharactersListByCreatedAt() }) {
+                            TextButton(onClick = {
+                                characterListVM.sortCharactersListByCreatedAt()
+                                showSortBottomSheet.value = false
+                            }) {
                                 Text(
                                     text = "Created At",
                                     fontSize = 18.sp,
@@ -330,7 +396,10 @@ class CharacterListHomeScreen : ComponentActivity() {
                                     modifier = Modifier.padding(vertical = 8.dp)
                                 )
                             }
-                            TextButton(onClick = { characterListVM.sortCharactersListByUpdatedAt() }) {
+                            TextButton(onClick = {
+                                characterListVM.sortCharactersListByUpdatedAt()
+                                showSortBottomSheet.value = false
+                            }) {
                                 Text(
                                     text = "Updated At",
                                     fontSize = 18.sp,
