@@ -143,35 +143,45 @@ class CharacterListVM(private val coreServices: CoreServices): BaseVM<CharacterL
 
     fun sortCharactersListByName() {
         mutableState.value = mutableState.value.copy(isFilterSortOperation = true)
-        charactersList = charactersList.sortedBy {
-            it.name
+        coreServices.scope.launch {
+            charactersList = charactersList.sortedBy {
+                it.name
+            }
         }
     }
 
     fun sortCharactersListByCreatedAt() {
         mutableState.value = mutableState.value.copy(isFilterSortOperation = true)
-        charactersList = charactersList.sortedBy {
-            it.created
+        coreServices.scope.launch {
+            charactersList = charactersList.sortedBy {
+                it.created
+            }
         }
     }
     fun sortCharactersListByUpdatedAt() {
         mutableState.value = mutableState.value.copy(isFilterSortOperation = true)
-        charactersList = charactersList.sortedBy {
-            it.edited
+        coreServices.scope.launch {
+            charactersList = charactersList.sortedBy {
+                it.edited
+            }
         }
     }
 
     fun filterCharacterListByMale() {
         mutableState.value = mutableState.value.copy(isFilterSortOperation = true)
-        charactersList = charactersList.filter {
-            it.gender == "male"
+        coreServices.scope.launch {
+            charactersList = charactersList.filter {
+                it.gender == "male"
+            }
         }
     }
 
     fun filterCharacterListByFemale() {
         mutableState.value = mutableState.value.copy(isFilterSortOperation = true)
-        charactersList = charactersList.filter {
-            it.gender == "female"
+        coreServices.scope.launch {
+            charactersList = charactersList.filter {
+                it.gender == "female"
+            }
         }
     }
 }
